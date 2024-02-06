@@ -1,0 +1,16 @@
+type: markdown
+title: Calendar New Event
+content: >-
+  {% set cal = state_attr('calendar.tvboard','data') %}
+  {% for event in cal if as_timestamp(event.start) < as_timestamp(now())+states('input_select.timeframe_next_calendar_events')|int*60*60 -%}
+    {% set start_time = event.start -%}
+    {% set end_time = event.end -%}
+    {% set formatted_start_time = (as_timestamp(start_time))|timestamp_custom ('%a %-I:%M %p') -%}
+    {% set formatted_end_time = (as_timestamp(end_time))|timestamp_custom ('%-I:%M %p') -%}
+    {% set formatted_day = (as_timestamp(start_time)+18000)|timestamp_custom ('%a') -%}
+      {% if event.all_day == True -%}
+      **{{ formatted_day }}**{{ " | " + event.summary -}}
+      {% else -%}
+      **{{ formatted_start_time }} - {{ formatted_end_time }}**{{ " | " + event.summary -}}
+      {% endif %}
+    {% endfor %}'
